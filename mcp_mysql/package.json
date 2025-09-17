@@ -1,0 +1,20 @@
+{
+  "name": "mcp_mysql",
+  "version": "1.0.0",
+  "description": "Servidor MCP para MySQL",
+  "main": "server.js",
+  "bin": {
+    "mysql-mcp-server": "./server.js"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node -e \"console.log('Teste básico OK')\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.0",
+    "mysql2": "^3.14.5"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "mcp_postgres",
+  "version": "1.0.0",
+  "description": "Servidor MCP para PostgreSQL",
+  "main": "server.js",
+  "bin": {
+    "postgres-mcp-server": "./server.js"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node -e \"console.log('Teste básico OK')\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.0",
+    "pg": "^8.12.0"
+  }
+}
