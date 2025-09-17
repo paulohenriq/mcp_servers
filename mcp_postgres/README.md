@@ -12,10 +12,16 @@ Servidor MCP (Model Context Protocol) para integração com PostgreSQL, permitin
 - **Suporte a SSL** - Conecte a bancos PostgreSQL com SSL
 - **Proteções de segurança** - Limite de resultados e validação de queries
 
-## Instalação
+## Instalar as dependências
 
 ```bash
 npm install
+```
+
+## Disponibilizar globalmente para uso nos workspaces dos projetos
+
+```bash
+npm link
 ```
 
 ## Configuração
