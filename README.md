@@ -9,9 +9,9 @@ Repositório com múltiplos servidores MCP (Model Context Protocol) para possibi
 
 ## Índice de Servidores
 
-- MySQL: `mcp_mysql/`
+- MySQL: [mcp_mysql](./mcp_mysql)
   - Servidor MCP para consultas seguras em MySQL
-- PostgreSQL: `mcp_postgres/`
+- PostgreSQL: [mcp_postgres](./mcp_postgres)
   - Servidor MCP para consultas seguras em PostgreSQL (inclui CTEs, schemas e SSL)
 
 
@@ -20,8 +20,8 @@ Repositório com múltiplos servidores MCP (Model Context Protocol) para possibi
 
 Acesse o README de cada servidor para instruções detalhadas de instalação, configuração por workspace no Cursor (`.cursor/settings.json`) e exemplos de uso:
 
-- `mcp_mysql/README.md`
-- `mcp_postgres/README.md`
+- [📁 README MCP MySQL](./mcp_mysql/README.md)
+- [📁 README MCP Postgres](./mcp_postgres/README.md)
 
 ## Licença
 
