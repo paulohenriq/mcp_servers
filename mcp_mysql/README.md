@@ -10,10 +10,16 @@ Servidor MCP (Model Context Protocol) para integração com MySQL, permitindo qu
 - **Listagem de tabelas** - Visualize todas as tabelas do banco
 - **Proteções de segurança** - Limite de resultados e validação de queries
 
-## Instalação
+## Instalar as dependências
 
 ```bash
 npm install
+```
+
+## Disponibilizar globalmente para uso nos workspaces dos projetos
+
+```bash
+npm link
 ```
 
 ## Configuração

@@ -1,4 +1,5 @@
 # MCP Servers
+![MCP Servers](./assets/hero-repo.png)
 
 Repositório com múltiplos servidores MCP (Model Context Protocol) para possibilitar a integração de ferramentas de IA.
 
