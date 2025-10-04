@@ -14,8 +14,8 @@ Repositório com múltiplos servidores MCP (Model Context Protocol) para possibi
   - Servidor MCP para consultas seguras em MySQL
 - PostgreSQL: [mcp_postgres](./mcp_postgres)
   - Servidor MCP para consultas seguras em PostgreSQL (inclui CTEs, schemas e SSL)
-
-
+- Jira: [mcp_jira](./mcp_jira)
+  - Servidor MCP para realizar interações com os projetos Jira a partir de um API Token
 
 ## Como começar
 
@@ -23,6 +23,7 @@ Acesse o README de cada servidor para instruções detalhadas de instalação, c
 
 - [📁 README MCP MySQL](./mcp_mysql/README.md)
 - [📁 README MCP Postgres](./mcp_postgres/README.md)
+- [📁 README MCP Jira](./mcp_jira/README.md)
 
 ## Licença
 
