@@ -15,13 +15,13 @@ function basicAuthHeader(email, token) {
 
 // Jira aceita "started" como "YYYY-MM-DDTHH:mm:ss.SSSZ" (ex.: +0000).
 // Vamos gerar no fuso do usuário se vier só date/hora local.
-function toJiraStartedISO(input, tz = "UTC") {
+function toJiraStartedISO(input) {
   // Se já vier um ISO com offset tipo "+0000" ou "+03:00", apenas retorna
   if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?([+-]\d{2}:?\d{2}|Z|[+-]\d{4})$/.test(input)) {
     // Normaliza "+03:00" para "+0300"
     return input.replace(/([+-]\d{2}):(\d{2})$/, (_m, h, m) => `${h}${m}`);
   }
-  // Caso contrário, interpreta como local e aplica timezone
+  // Caso contrário, interpreta como local e aplica timezone do sistema
   const dt = new Date(input);
   if (isNaN(dt)) throw new Error(`started inválido: ${input}`);
 
@@ -64,10 +64,24 @@ async function jiraFetch(method, path, body) {
 
   const text = await res.text();
   let json;
-  try { json = text ? JSON.parse(text) : null; } catch { json = { raw: text }; }
+  try { 
+    json = text ? JSON.parse(text) : null; 
+  } catch (parseError) {
+    console.error('⚠️ Erro ao fazer parse da resposta JSON:', parseError.message);
+    json = { raw: text }; 
+  }
 
   if (!res.ok) {
-    const msg = json?.errorMessages?.join(" | ") || json?.errors || text || res.statusText;
+    let msg;
+    if (json?.errorMessages?.length) {
+      msg = json.errorMessages.join(" | ");
+    } else if (json?.errors) {
+      msg = typeof json.errors === 'object' 
+        ? JSON.stringify(json.errors) 
+        : json.errors;
+    } else {
+      msg = text || res.statusText;
+    }
     throw new Error(`Jira API ${res.status} ${res.statusText}: ${msg}`);
   }
   return json ?? {};
@@ -78,9 +92,9 @@ class JiraMCPServer {
   constructor() {
     this.server = new Server(
       {
-        name: "jira-worklog-mcp",
-        version: "1.0.0",
-        description: "MCP Server para pesquisar issues e lançar worklog no Jira Cloud."
+        name: "jira-mcp-server",
+        version: "1.1.0",
+        description: "MCP Server para gerenciar issues, worklogs, comentários e transições no Jira Cloud."
       },
       {
         capabilities: {
@@ -244,8 +258,7 @@ class JiraMCPServer {
   async addWorklog(args) {
     const { issueKey, timeSpentSeconds, comment, started, visibility } = args;
     const startedStr = toJiraStartedISO(
-      started || new Date().toISOString(),
-      process.env.JIRA_USER_TZ || "UTC"
+      started || new Date().toISOString()
     );
 
     const body = {
@@ -267,12 +280,14 @@ class JiraMCPServer {
 
   async searchJql(args) {
     const { jql, maxResults = 25, fields } = args;
-    const body = {
-      jql,
-      maxResults,
-      fields: fields ?? ["summary", "status", "assignee", "timetracking"]
-    };
-    const res = await jiraFetch("GET", `/rest/api/2/search?jql=${encodeURIComponent(jql)}&maxResults=${maxResults}&fields=${(fields || ["summary", "status", "assignee", "timetracking"]).join(",")}`);
+    const defaultFields = ["summary", "status", "assignee", "timetracking"];
+    const fieldsList = (fields || defaultFields).join(",");
+    
+    const res = await jiraFetch(
+      "GET", 
+      `/rest/api/3/search?jql=${encodeURIComponent(jql)}&maxResults=${maxResults}&fields=${fieldsList}`
+    );
+    
     const issues = (res.issues || []).map((it) => ({
       key: it.key,
       id: it.id,
@@ -294,8 +309,8 @@ class JiraMCPServer {
     const { issueKey, expand } = args;
     let path = `/rest/api/3/issue/${encodeURIComponent(issueKey)}`;
     
-    // Sempre incluir campos importantes: description, comment, status, assignee, summary
-    const fields = "summary,description,status,assignee,comment,created,updated,priority,issuetype,project";
+    // Campos importantes (removido 'comment' para melhor performance - use jira.getComments)
+    const fields = "summary,description,status,assignee,created,updated,priority,issuetype,project";
     const params = new URLSearchParams({ fields });
     
     if (expand && expand.length > 0) {
@@ -329,17 +344,7 @@ class JiraMCPServer {
           name: res.fields?.project?.name
         },
         created: res.fields?.created,
-        updated: res.fields?.updated,
-        comment: res.fields?.comment ? {
-          total: res.fields.comment.total,
-          comments: res.fields.comment.comments?.map(c => ({
-            id: c.id,
-            author: c.author?.displayName,
-            body: c.body,
-            created: c.created,
-            updated: c.updated
-          }))
-        } : null
+        updated: res.fields?.updated
       }
     };
     

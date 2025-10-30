@@ -104,9 +104,10 @@ jira.getIssue({
 
 **Retorna:**
 - Summary, description, status, assignee, priority, issuetype
-- Comentários (incluindo autor, data e corpo)
 - Datas de criação e atualização
 - Informações do projeto
+
+**Nota:** Para obter comentários, use `jira.getComments` para melhor performance e controle de paginação.
 
 ### 2. **jira.addWorklog**
 Adiciona um worklog (registro de tempo) em uma issue.
@@ -270,7 +271,8 @@ jira.addWorklog({
 jira.getIssue({
   issueKey: "PROJ-123"
 })
-// Retorna: summary, description, status, assignee, comments, etc.
+// Retorna: summary, description, status, assignee, priority, dates, etc.
+// Para comentários, use jira.getComments separadamente
 ```
 
 ### Obter apenas comentários de uma issue:
